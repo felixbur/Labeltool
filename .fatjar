@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Nov 28 12:55:23 CET 2014
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=labelTool.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=<inc|Labeltool/images>
