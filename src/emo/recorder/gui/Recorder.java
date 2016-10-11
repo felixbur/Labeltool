@@ -74,19 +74,14 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	private int tableheight;
 	private int _samplerate;
 	private JTextArea transField;
-	private HashMap<String, String> _charReplacements, _classes,
-			_abbreviations, _prefixes;
-	private JButton _record, _play, _stop, _refresh, _exec, _open, _resume,
-			_judge, _train, judgeAll, _delete, statistics, _transcribe,
-			evaluate, recognize, recognizeAll, removeUntagged, delAllPreds,
-			toggleTranscript, copyRecognition, _synthesize, _synthesizeAll,
-			_normalize, _normalizeAll, _wer, _export, _import, setNA,
+	private HashMap<String, String> _charReplacements, _classes, _abbreviations, _prefixes;
+	private JButton _record, _play, _stop, _refresh, _exec, _open, _resume, _judge, _train, judgeAll, _delete,
+			statistics, _transcribe, evaluate, recognize, recognizeAll, removeUntagged, delAllPreds, toggleTranscript,
+			copyRecognition, _synthesize, _synthesizeAll, _normalize, _normalizeAll, _wer, _export, _import, setNA,
 			removeLastLabel, removePred, _rename, _shuffleButton;
-	private JCheckBox fastModeCheck, fastPlayModeCheck, extractFeaturesCheck,
-			numberToWordCheck, _openDirectory, _openModel, _evalFiles,
-			_checkSpelling, _ttsSexFemale;
-	private JLabel fastModeLabel, fastPlayModeLabel, extractFeaturesLabel,
-			numberToWordLabel, _titleLabel;
+	private JCheckBox fastModeCheck, fastPlayModeCheck, extractFeaturesCheck, numberToWordCheck, _openDirectory,
+			_openModel, _evalFiles, _checkSpelling, _ttsSexFemale, _playAll;
+	private JLabel fastModeLabel, fastPlayModeLabel, extractFeaturesLabel, numberToWordLabel, _titleLabel;
 	private AudioFormat _formatPCM;
 	private JSpinner _classifierSpinner, _srSpinner, _afSpinner, _ttsLanguages;
 	private String _dataDescription = "";
@@ -110,22 +105,19 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			try {
 				servername = _config.getString("url");
 				_samplerate = Integer.parseInt(_config.getString("sampleRate"));
-				_formatPCM = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-						_samplerate, 16, 1, 2, _samplerate, false);
-				numberToWord = Boolean.parseBoolean(_config
-						.getString("numberToWord"));
+				_formatPCM = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, _samplerate, 16, 1, 2, _samplerate,
+						false);
+				numberToWord = Boolean.parseBoolean(_config.getString("numberToWord"));
 			} catch (Exception e) {
 				System.err.println("Kein URL Parameter");
 			}
 			try {
-				tableheight = Integer
-						.parseInt(_config.getString("tableheight"));
+				tableheight = Integer.parseInt(_config.getString("tableheight"));
 			} catch (Exception e) {
 				tableheight = 300;
 			}
 			getContentPane().add(makeContentPane());
-			interfaceServer = new InterfaceServer(servername,
-					Integer.parseInt(_config.getString("port")));
+			interfaceServer = new InterfaceServer(servername, Integer.parseInt(_config.getString("port")));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -155,8 +147,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		}
 		Container controlButtons = makeControlButtonPane();
 		pane.add(controlButtons);
-		if (!Boolean.parseBoolean(_config
-				.getString("withClassificationButtons"))) {
+		if (!Boolean.parseBoolean(_config.getString("withClassificationButtons"))) {
 			controlButtons.setVisible(false);
 		}
 		if (!Boolean.parseBoolean(_config.getString("transcribeOnly"))) {
@@ -181,8 +172,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	public void repaintView() {
-		System.out.println("refreshing view, recordings no: "
-				+ _recordings.getRowCount());
+		System.out.println("refreshing view, recordings no: " + _recordings.getRowCount());
 		this.setNrOfRecordings();
 		// if (recordings.getRowCount()>0) {
 		lastSelectedRow = 0;
@@ -200,8 +190,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @return The header pane.
 	 */
 	public Container makeHeaderPane() {
-		_titleLabel = new JLabel(Constants.title + ", version: "
-				+ Constants.version, JLabel.CENTER);
+		_titleLabel = new JLabel(Constants.title + ", version: " + Constants.version, JLabel.CENTER);
 		JPanel pane = new JPanel();
 		pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
 		pane.setPreferredSize(new Dimension(600, 50));
@@ -210,8 +199,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	public void setServerVersion(String version) {
-		_titleLabel = new JLabel(Constants.title + ", version: "
-				+ Constants.version + " (server version: " + version + ")");
+		_titleLabel = new JLabel(
+				Constants.title + ", version: " + Constants.version + " (server version: " + version + ")");
 		// @todo: doesn't work
 	}
 
@@ -241,8 +230,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#setNrOfRecordings()
 	 */
 	public void setNrOfRecordings() {
-		_nrOfRecordingsLab.setText("no. of recordings: "
-				+ _recordings.getRowCount());
+		_nrOfRecordingsLab.setText("no. of recordings: " + _recordings.getRowCount());
 	}
 
 	public boolean showTranscript() {
@@ -293,15 +281,12 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @return The table pane.
 	 */
 	public Container makeTablePane() {
-		_recordings = new RecordingsTableModel(this,
-				Boolean.parseBoolean(_config.getString("classification")),
+		_recordings = new RecordingsTableModel(this, Boolean.parseBoolean(_config.getString("classification")),
 				Boolean.parseBoolean(_config.getString("hideLabel")),
 				Boolean.parseBoolean(_config.getString("hideName")),
-				Boolean.parseBoolean(_config.getString("audioFormatAlaw")),
-				_config);
+				Boolean.parseBoolean(_config.getString("audioFormatAlaw")), _config);
 		_table = new JTable(_recordings);
-		_table.setPreferredScrollableViewportSize(new Dimension(400,
-				tableheight));
+		_table.setPreferredScrollableViewportSize(new Dimension(400, tableheight));
 		TableColumn col = null;
 		_table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_table.getColumnModel().getColumn(0).setPreferredWidth(2);
@@ -323,8 +308,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		if (Boolean.parseBoolean(_config.getString("markAngerInTable"))) {
 			TableCellRenderer customRenderer = new CustomTableCellRenderer();
 			try {
-				_table.setDefaultRenderer(Class.forName("java.lang.String"),
-						customRenderer);
+				_table.setDefaultRenderer(Class.forName("java.lang.String"), customRenderer);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -398,16 +382,18 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		_open.setBackground(recorderButtonsBGColor);
 
 		_openDirectory = new JCheckBox();
-		_openDirectory.setToolTipText(_config
-				.getString("openDirectory.tooltip"));
-		JLabel openDirectoryL = new JLabel(
-				_config.getString("openDirectory.label"));
-		openDirectoryL.setToolTipText(_config
-				.getString("openDirectory.tooltip"));
+		_openDirectory.setToolTipText(_config.getString("openDirectory.tooltip"));
+		JLabel openDirectoryL = new JLabel(_config.getString("openDirectory.label"));
+		openDirectoryL.setToolTipText(_config.getString("openDirectory.tooltip"));
 		openDirectoryL.setForeground(Color.white);
 
-		String[] srArray = StringUtil.stringToArray(_config
-				.getString("sampleRate.values"));
+		_playAll = new JCheckBox();
+		_playAll.setToolTipText(_config.getString("playAll.tooltip"));
+		JLabel playAllL = new JLabel(_config.getString("playAll.label"));
+		playAllL.setToolTipText(_config.getString("playAll.tooltip"));
+		playAllL.setForeground(Color.white);
+
+		String[] srArray = StringUtil.stringToArray(_config.getString("sampleRate.values"));
 		SpinnerListModel srModel = new SpinnerListModel(srArray);
 		srModel.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -418,8 +404,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		_srSpinner.setValue(String.valueOf(_samplerate));
 		_srSpinner.setPreferredSize(new Dimension(60, 20));
 
-		String[] afArray = StringUtil.stringToArray(_config
-				.getString("audioFormat.values"));
+		String[] afArray = StringUtil.stringToArray(_config.getString("audioFormat.values"));
 		SpinnerListModel afModel = new SpinnerListModel(afArray);
 		afModel.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -446,6 +431,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		pane.add(_open);
 		pane.add(openDirectoryL);
 		pane.add(_openDirectory);
+		pane.add(playAllL);
+		pane.add(_playAll);
 		_openModel = new JCheckBox();
 		if (Boolean.parseBoolean(_config.getString("classification"))) {
 			_openModel.setToolTipText(_config.getString("openModel.tooltip"));
@@ -489,44 +476,33 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			pane.add(evaluate);
 			_evalFiles = new JCheckBox();
 			_evalFiles.setToolTipText(_config.getString("evalFiles.tooltip"));
-			JLabel evalFilesLabel = new JLabel(
-					_config.getString("evalFiles.label"));
+			JLabel evalFilesLabel = new JLabel(_config.getString("evalFiles.label"));
 			evalFilesLabel.setForeground(Color.white);
-			evalFilesLabel.setToolTipText(_config
-					.getString("evalFiles.tooltip"));
+			evalFilesLabel.setToolTipText(_config.getString("evalFiles.tooltip"));
 			pane.add(evalFilesLabel);
 			pane.add(_evalFiles);
 		}
 		pane.setBackground(new Color(150, 150, 150));
 		pane.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2, Color.black));
 		fastPlayModeCheck = new JCheckBox();
-		fastPlayModeCheck.setToolTipText(_config
-				.getString("fastPlayMode.tooltip"));
+		fastPlayModeCheck.setToolTipText(_config.getString("fastPlayMode.tooltip"));
 		fastPlayModeLabel = new JLabel(_config.getString("fastPlayMode.label"));
-		fastPlayModeLabel.setToolTipText(_config
-				.getString("fastPlayMode.tooltip"));
+		fastPlayModeLabel.setToolTipText(_config.getString("fastPlayMode.tooltip"));
 		fastPlayModeLabel.setForeground(Color.white);
 		numberToWordCheck = new JCheckBox();
-		numberToWordCheck.setToolTipText(_config
-				.getString("numberToWord.tooltip"));
+		numberToWordCheck.setToolTipText(_config.getString("numberToWord.tooltip"));
 		numberToWordLabel = new JLabel(_config.getString("numberToWord.label"));
-		numberToWordLabel.setToolTipText(_config
-				.getString("numberToWord.tooltip"));
+		numberToWordLabel.setToolTipText(_config.getString("numberToWord.tooltip"));
 		numberToWordLabel.setForeground(Color.white);
 		if (Boolean.parseBoolean(_config.getString("classification"))) {
 			extractFeaturesCheck = new JCheckBox();
-			extractFeaturesCheck.setToolTipText(_config
-					.getString("extractFeatures.tooltip"));
+			extractFeaturesCheck.setToolTipText(_config.getString("extractFeatures.tooltip"));
 			extractFeaturesCheck.setSelected(true);
-			extractFeaturesLabel = new JLabel(
-					_config.getString("extractFeatures.label"));
-			extractFeaturesLabel.setToolTipText(_config
-					.getString("extractFeatures.tooltip"));
+			extractFeaturesLabel = new JLabel(_config.getString("extractFeatures.label"));
+			extractFeaturesLabel.setToolTipText(_config.getString("extractFeatures.tooltip"));
 			extractFeaturesLabel.setForeground(Color.white);
-			String[] modelArray = new String[] { Constants.TYPE_SMO,
-					Constants.TYPE_NAIVE_BAYEYS, Constants.TYPE_J48 };
-			SpinnerListModel classifierTypeModel = new SpinnerListModel(
-					modelArray);
+			String[] modelArray = new String[] { Constants.TYPE_SMO, Constants.TYPE_NAIVE_BAYEYS, Constants.TYPE_J48 };
+			SpinnerListModel classifierTypeModel = new SpinnerListModel(modelArray);
 			classifierTypeModel.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					changeClassifierType((String) _classifierSpinner.getValue());
@@ -582,8 +558,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	public Container makeSynthesizerPane() {
 		JPanel pane = new JPanel();
 		pane.setBackground(new Color(110, 110, 110));
-		pane.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2,
-				Color.magenta));
+		pane.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2, Color.magenta));
 		_synthesize = initButton("synthesize");
 		_synthesizeAll = initButton("synthesizeAll");
 		pane.add(_synthesizeAll);
@@ -595,8 +570,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		label.setForeground(Color.white);
 		pane.add(label);
 		pane.add(_ttsSexFemale);
-		String[] afArray = StringUtil.stringToArray(_config
-				.getString("ttsLanguages.values"));
+		String[] afArray = StringUtil.stringToArray(_config.getString("ttsLanguages.values"));
 		SpinnerListModel model = new SpinnerListModel(afArray);
 		_ttsLanguages = new JSpinner(model);
 		_ttsLanguages.setPreferredSize(new Dimension(60, 20));
@@ -613,8 +587,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		// Add Components to a JPanel, using the default FlowLayout.
 		JPanel pane = new JPanel();
 		if (Boolean.parseBoolean(_config.getString("withTranscribe"))) {
-			if (Boolean.parseBoolean(_config
-					.getString("transcriptionFieldInline"))) {
+			if (Boolean.parseBoolean(_config.getString("transcriptionFieldInline"))) {
 				KeyListener transFieldListener = new KeyListener() {
 					NumberToWord numberToWordTool = new NumberToWord();
 
@@ -628,68 +601,52 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 						// check for shortcuts
 						if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
 							int caretPos = transField.getCaretPosition() - 1;
-							for (Iterator<String> iterator = _charReplacements
-									.keySet().iterator(); iterator.hasNext();) {
+							for (Iterator<String> iterator = _charReplacements.keySet().iterator(); iterator
+									.hasNext();) {
 								String key = ((String) iterator.next());
 								// System.err.println("key: >"+key+"<");
 								String text = transField.getText();
 								try {
-									String lastChar = text.substring(caretPos,
-											caretPos + 1);
-									// System.err.println("lastChar: >"+lastChar+"<");
+									String lastChar = text.substring(caretPos, caretPos + 1);
+									// System.err.println("lastChar:
+									// >"+lastChar+"<");
 									if (lastChar.compareTo(key) == 0) {
 										// System.err.println("yep");
-										text = text.substring(0, caretPos)
-												+ _charReplacements.get(key)
-												+ text.substring(caretPos + 1,
-														text.length());
+										text = text.substring(0, caretPos) + _charReplacements.get(key)
+												+ text.substring(caretPos + 1, text.length());
 										transField.setText(text);
-										transField.setCaretPosition(caretPos
-												+ _charReplacements.get(key)
-														.length());
+										transField.setCaretPosition(caretPos + _charReplacements.get(key).length());
 										break;
 									}
 								} catch (Exception e) {
-									System.err
-											.println("problem to set auto text: "
-													+ text);
+									System.err.println("problem to set auto text: " + text);
 								}
 							}
 						}
 						// check for class annotations
 						if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
 							int caretPos = transField.getCaretPosition() - 1;
-							for (Iterator<String> iterator = _classes.keySet()
-									.iterator(); iterator.hasNext();) {
+							for (Iterator<String> iterator = _classes.keySet().iterator(); iterator.hasNext();) {
 								String key = ((String) iterator.next());
 								// System.err.println("key: >"+key+"<");
 								String text = transField.getText();
 								try {
-									String lastChar = text.substring(
-											caretPos - 1, caretPos + 1);
-									// System.err.println("lastChar: >"+lastChar+"<");
+									String lastChar = text.substring(caretPos - 1, caretPos + 1);
+									// System.err.println("lastChar:
+									// >"+lastChar+"<");
 									if (lastChar.compareTo(key) == 0) {
-										int start = StringUtil.lastPositionOf(
-												text, " ", caretPos);
-										String classExp = text.substring(start,
-												caretPos - 1);
+										int start = StringUtil.lastPositionOf(text, " ", caretPos);
+										String classExp = text.substring(start, caretPos - 1);
 										String elemName = _classes.get(key);
-										classExp = StringUtil.tagString(
-												classExp, elemName);
-										text = text.substring(0, start)
-												+ classExp
-												+ " "
-												+ text.substring(caretPos + 1,
-														text.length());
+										classExp = StringUtil.tagString(classExp, elemName);
+										text = text.substring(0, start) + classExp + " "
+												+ text.substring(caretPos + 1, text.length());
 										transField.setText(text);
-										transField.setCaretPosition(caretPos
-												+ classExp.length() - 3);
+										transField.setCaretPosition(caretPos + classExp.length() - 3);
 										break;
 									}
 								} catch (Exception e) {
-									System.err
-											.println("problem to set auto text: "
-													+ text);
+									System.err.println("problem to set auto text: " + text);
 								}
 							}
 						}
@@ -700,28 +657,24 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 								// System.err.println("key: >"+key+"<");
 								String text = transField.getText();
 								try {
-									String lastChar = text.substring(caretPos,
-											caretPos + 1);
-									// System.err.println("lastChar: >"+lastChar+"<");
+									String lastChar = text.substring(caretPos, caretPos + 1);
+									// System.err.println("lastChar:
+									// >"+lastChar+"<");
 									if (lastChar.compareTo(key) == 0) {
-										int start = StringUtil.lastPositionOf(
-												text, " ", caretPos);
-										String word = text.substring(start,
-												caretPos);
+										int start = StringUtil.lastPositionOf(text, " ", caretPos);
+										String word = text.substring(start, caretPos);
 										String prefix = _prefixes.get(key);
-										// System.err.println("prefix: >"+prefix+"<");
+										// System.err.println("prefix:
+										// >"+prefix+"<");
 										word = prefix + word;
 										text = text.substring(0, start) + word;
 										transField.setText(text);
-										transField.setCaretPosition(caretPos
-												+ word.length() - 4);
+										transField.setCaretPosition(caretPos + word.length() - 4);
 										break;
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
-									System.err
-											.println("problem to set auto text: "
-													+ text);
+									System.err.println("problem to set auto text: " + text);
 								}
 							}
 						}
@@ -730,102 +683,69 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 							int caretPos = transField.getCaretPosition() - 1;
 							String text = transField.getText();
 							try {
-								int start = StringUtil.lastPositionOf(text,
-										" ", caretPos);
+								int start = StringUtil.lastPositionOf(text, " ", caretPos);
 								String test = text.substring(start, caretPos);
 								// search for abbreviations
-								for (Iterator<String> iterator = _abbreviations
-										.keySet().iterator(); iterator
+								for (Iterator<String> iterator = _abbreviations.keySet().iterator(); iterator
 										.hasNext();) {
 									String key = ((String) iterator.next());
 									if (key.compareTo(test) == 0) {
-										String newtext = _abbreviations
-												.get(key);
-										text = text.substring(0, start)
-												+ newtext
-												+ " "
-												+ text.substring(caretPos + 1,
-														text.length());
+										String newtext = _abbreviations.get(key);
+										text = text.substring(0, start) + newtext + " "
+												+ text.substring(caretPos + 1, text.length());
 										transField.setText(text);
-										transField.setCaretPosition(caretPos
-												+ newtext.length());
+										transField.setCaretPosition(caretPos + newtext.length());
 									}
 								}
 								// convert numbers automatically
 								if (numberToWordCheck.isSelected()) {
-									String newtext = numberToWordTool
-											.filtNum(test);
+									String newtext = numberToWordTool.filtNum(test);
 									if (newtext.compareTo(test) != 0) {
 										newtext = newtext.trim();
 										// System.err.println("#### test = [" +
 										// test
 										// + "] newtext = [" + newtext + "]");
-										text = text.substring(0, start)
-												+ newtext
-												+ " "
-												+ text.substring(caretPos + 1,
-														text.length());
+										text = text.substring(0, start) + newtext + " "
+												+ text.substring(caretPos + 1, text.length());
 										transField.setText(text);
-										transField.setCaretPosition(caretPos
-												+ newtext.length());
+										transField.setCaretPosition(caretPos + newtext.length());
 									}
 								}
 								// check spelling
 								if (_checkSpelling.isSelected()) {
 									boolean hasPunctuationMark = false;
-									if (test.endsWith("?")
-											|| test.endsWith(",")
-											|| test.endsWith(".")
+									if (test.endsWith("?") || test.endsWith(",") || test.endsWith(".")
 											|| test.endsWith("!")) {
 										hasPunctuationMark = true;
 									}
-									String answer = interfaceServer.getAnswer(
-											"check;" + test).trim();
+									String answer = interfaceServer.getAnswer("check;" + test).trim();
 									if (answer.compareTo("ok") != 0) {
-										Vector<String> suggestions = StringUtil
-												.stringToVector(answer);
-										Object[] options = new Object[suggestions
-												.size() + 2];
+										Vector<String> suggestions = StringUtil.stringToVector(answer);
+										Object[] options = new Object[suggestions.size() + 2];
 										int i = 0;
 										for (String s : suggestions) {
 											options[i++] = s;
 										}
 										options[i++] = Constants.CMD_ADD;
 										options[i++] = Constants.CMD_IGNORE;
-										int n = JOptionPane
-												.showOptionDialog(
-														null,
-														"unknown word",
-														"Spellchecker",
-														JOptionPane.YES_NO_CANCEL_OPTION,
-														JOptionPane.QUESTION_MESSAGE,
-														null, options,
-														options[0]);
+										int n = JOptionPane.showOptionDialog(null, "unknown word", "Spellchecker",
+												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												options, options[0]);
 										String choice = (String) options[n];
 										if (choice.compareTo(Constants.CMD_ADD) == 0) {
 											// add the word to dictionary
-											interfaceServer
-													.sendMessage("addWord;"
-															+ test);
-										} else if (choice
-												.compareTo(Constants.CMD_IGNORE) != 0) {
-											text = text.substring(0, start)
-													+ choice
-													+ " "
-													+ text.substring(
-															caretPos + 1,
-															text.length());
+											interfaceServer.sendMessage("addWord;" + test);
+										} else if (choice.compareTo(Constants.CMD_IGNORE) != 0) {
+											text = text.substring(0, start) + choice + " "
+													+ text.substring(caretPos + 1, text.length());
 											transField.setText(text);
-											transField
-													.setCaretPosition(caretPos
-															+ choice.length());
+											transField.setCaretPosition(caretPos + choice.length());
 										}
 
 									}
 								}
 							} catch (Exception e) {
-								System.err.println("problem to set auto text: "
-										+ text);
+								System.err.println("problem to set auto text: " + text);
 							}
 						}
 					}
@@ -837,28 +757,23 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 				transField.addKeyListener(transFieldListener);
 				JScrollPane transFieldScroll = new JScrollPane(transField);
 				transField.setLineWrap(true);
-				transFieldScroll.setPreferredSize(new Dimension(
-						Integer.parseInt(_config
-								.getString("transcriptionField.width")),
-						Integer.parseInt(_config
-								.getString("transcriptionField.height"))));
+				transFieldScroll
+						.setPreferredSize(new Dimension(Integer.parseInt(_config.getString("transcriptionField.width")),
+								Integer.parseInt(_config.getString("transcriptionField.height"))));
 				pane.add(transFieldScroll);
 			} else {
 				_transcribe = new JButton(_config.getString("transcribe.label"));
 				_transcribe.setActionCommand("transcribe");
-				_transcribe.setToolTipText(_config
-						.getString("transcribe.tooltip"));
+				_transcribe.setToolTipText(_config.getString("transcribe.tooltip"));
 				_transcribe.addActionListener(this);
-				_transcribe.setMnemonic(_config.getString("transcribe.short")
-						.charAt(0));
+				_transcribe.setMnemonic(_config.getString("transcribe.short").charAt(0));
 				pane.add(_transcribe);
 			}
 		}
 		_export = initButton("export");
 		_import = initButton("import");
 		_checkSpelling = new JCheckBox();
-		_checkSpelling.setToolTipText(_config
-				.getString("checkSpelling.tooltip"));
+		_checkSpelling.setToolTipText(_config.getString("checkSpelling.tooltip"));
 		JLabel label = new JLabel(_config.getString("checkSpelling.label"));
 		label.setForeground(Color.white);
 		label.setToolTipText(_config.getString("checkSpelling.tooltip"));
@@ -883,8 +798,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		Vector<String> _names;
 		ValueReturnFrameButtonPanel _vrfbp;
 
-		public CustomActionLister(Vector<String> names,
-				ValueReturnFrameButtonPanel vrfbp) {
+		public CustomActionLister(Vector<String> names, ValueReturnFrameButtonPanel vrfbp) {
 			_names = names;
 			_vrfbp = vrfbp;
 		}
@@ -923,8 +837,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 
 	public Container makeJudgeButtonPane() {
 		JPanel pane = new JPanel();
-		String[] buttonNames = StringUtil.stringToArray(_config
-				.getString("buttons"));
+		String[] buttonNames = StringUtil.stringToArray(_config.getString("buttons"));
 		for (int i = 0; i < buttonNames.length; i++) {
 			JButton act = initButton(buttonNames[i]);
 			pane.add(act);
@@ -940,12 +853,9 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			pane.add(statistics);
 		}
 		fastModeCheck = new JCheckBox();
-		fastModeCheck.setToolTipText(_config
-				.getString("fastTranscritpionMode.tooltip"));
-		fastModeLabel = new JLabel(
-				_config.getString("fastTranscritpionMode.label"));
-		fastModeLabel.setToolTipText(_config
-				.getString("fastTranscritpionMode.tooltip"));
+		fastModeCheck.setToolTipText(_config.getString("fastTranscritpionMode.tooltip"));
+		fastModeLabel = new JLabel(_config.getString("fastTranscritpionMode.label"));
+		fastModeLabel.setToolTipText(_config.getString("fastTranscritpionMode.tooltip"));
 		fastModeLabel.setForeground(Color.white);
 		pane.add(fastModeLabel);
 		pane.add(fastModeCheck);
@@ -961,8 +871,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#start()
 	 */
 	public void start() {
-		KeyValues kv = new KeyValues(_config.getString("replacements"), ",",
-				":");
+		KeyValues kv = new KeyValues(_config.getString("replacements"), ",", ":");
 		_charReplacements = kv.getHashMap();
 		kv = new KeyValues(_config.getString("classes"), ",", ":");
 		_classes = kv.getHashMap();
@@ -986,18 +895,15 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 				} else {
 					selectedRow = lsm.getMinSelectionIndex();
 					_play.setEnabled(true);
-					if (Boolean.parseBoolean(_config
-							.getString("classification"))) {
+					if (Boolean.parseBoolean(_config.getString("classification"))) {
 						_judge.setEnabled(true);
 						_train.setEnabled(true);
 					}
 					_delete.setEnabled(true);
 					wavPositionSlider.setModel(new DefaultBoundedRangeModel());
-					if (Boolean.parseBoolean(_config
-							.getString("transcriptionFieldInline"))) {
+					if (Boolean.parseBoolean(_config.getString("transcriptionFieldInline"))) {
 						if (transField.isVisible()) {
-							transField.setText(_recordings
-									.getRecordingAtRow(selectedRow).words);
+							transField.setText(_recordings.getRecordingAtRow(selectedRow).words);
 						}
 					}
 				}
@@ -1014,8 +920,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 *            actionEvent fired by the button.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String[] buttonNames = StringUtil.stringToArray(_config
-				.getString("buttons"));
+		String[] buttonNames = StringUtil.stringToArray(_config.getString("buttons"));
 		for (int i = 0; i < buttonNames.length; i++) {
 			if (e.getActionCommand().equals(buttonNames[i])) {
 				setEmotion(_config.getString(buttonNames[i] + ".value"));
@@ -1027,7 +932,9 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		} else if (e.getActionCommand().equals("play")) {
 			_stop.setIcon(createImageIcon("images/stop.gif", ""));
 			play();
+
 		} else if (e.getActionCommand().equals("stop")) {
+			_playAll.setSelected(false);
 			if (!Boolean.parseBoolean(_config.getString("audioFormatAlaw"))) {
 				if (playThread != null || recThread != null) {
 					_stop.setIcon(createImageIcon("images/resume.gif", ""));
@@ -1157,11 +1064,9 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	public void refresh() {
-		updateThread = new UpdateFileListThread(servername,
-				Integer.parseInt(_config.getString("port")), this,
-				Boolean.parseBoolean(_config.getString("refreshFromHardDisc")),
-				_config.getString("charEnc"), Boolean.parseBoolean(_config
-						.getString("sortRecordings")),
+		updateThread = new UpdateFileListThread(servername, Integer.parseInt(_config.getString("port")), this,
+				Boolean.parseBoolean(_config.getString("refreshFromHardDisc")), _config.getString("charEnc"),
+				Boolean.parseBoolean(_config.getString("sortRecordings")),
 				Boolean.parseBoolean(_config.getString("sortOrderAscending")));
 		updateThread.start();
 	}
@@ -1183,9 +1088,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = chooser.getSelectedFile();
 				_fileDir = file.getParent();
-				SendMessageThread sendMessageThread = new SendMessageThread(
-						"openDir;" + file.getAbsolutePath(), servername,
-						Integer.parseInt(_config.getString("port")), this);
+				SendMessageThread sendMessageThread = new SendMessageThread("openDir;" + file.getAbsolutePath(),
+						servername, Integer.parseInt(_config.getString("port")), this);
 				sendMessageThread.start();
 			} else {
 				return;
@@ -1196,9 +1100,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = chooser.getSelectedFile();
 				_fileDir = file.getParent();
-				SendMessageThread sendMessageThread = new SendMessageThread(
-						"openModel;" + file.getAbsolutePath(), servername,
-						Integer.parseInt(_config.getString("port" + "")), this);
+				SendMessageThread sendMessageThread = new SendMessageThread("openModel;" + file.getAbsolutePath(),
+						servername, Integer.parseInt(_config.getString("port" + "")), this);
 				sendMessageThread.start();
 			} else {
 				return;
@@ -1209,9 +1112,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = chooser.getSelectedFile();
 				_fileDir = file.getParent();
-				SendMessageThread sendMessageThread = new SendMessageThread(
-						"open;" + file.getAbsolutePath(), servername,
-						Integer.parseInt(_config.getString("port" + "")), this);
+				SendMessageThread sendMessageThread = new SendMessageThread("open;" + file.getAbsolutePath(),
+						servername, Integer.parseInt(_config.getString("port" + "")), this);
 				sendMessageThread.start();
 			} else {
 				return;
@@ -1231,8 +1133,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			File file = chooser.getSelectedFile();
 			_fileDir = file.getParent();
 			SendMessageThread sendMessageThread = new SendMessageThread(
-					"exportTranscriptsToFile;" + file.getAbsolutePath(),
-					servername,
+					"exportTranscriptsToFile;" + file.getAbsolutePath(), servername,
 					Integer.parseInt(_config.getString("port" + "")), this);
 			sendMessageThread.start();
 		} else {
@@ -1253,8 +1154,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			File file = chooser.getSelectedFile();
 			_fileDir = file.getParent();
 			SendMessageThread sendMessageThread = new SendMessageThread(
-					"importTranscriptsFromFile;" + file.getAbsolutePath(),
-					servername,
+					"importTranscriptsFromFile;" + file.getAbsolutePath(), servername,
 					Integer.parseInt(_config.getString("port" + "")), this);
 			sendMessageThread.start();
 		} else {
@@ -1263,14 +1163,12 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	private void rename() {
-		String fileName = JOptionPane.showInputDialog(_config
-				.getString("rename.question"));
+		String fileName = JOptionPane.showInputDialog(_config.getString("rename.question"));
 		if (fileName != null) {
 			fileName = FileUtil.enforceExtension(fileName, _audioType);
 			Recording recording = _recordings.getRecordingAtRow(selectedRow);
-			SendMessageThread sendMessageThread = new SendMessageThread(
-					"rename;" + recording.path + ";" + fileName, servername,
-					Integer.parseInt(_config.getString("port")), this);
+			SendMessageThread sendMessageThread = new SendMessageThread("rename;" + recording.path + ";" + fileName,
+					servername, Integer.parseInt(_config.getString("port")), this);
 			sendMessageThread.start();
 		}
 	}
@@ -1291,30 +1189,24 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			refresh();
 		} else {
 			String fileName = "_neutralPred.raw";
-			if (Boolean
-					.parseBoolean(_config.getString("recordingAudioAskName"))) {
+			if (Boolean.parseBoolean(_config.getString("recordingAudioAskName"))) {
 				// Prompt the user for a fileName.
-				fileName = JOptionPane.showInputDialog(_config
-						.getString("record.question"));
+				fileName = JOptionPane.showInputDialog(_config.getString("record.question"));
 				if (fileName != null) {
 					// Wenn der User keinen Dateinamen angibt, heisst die Datei
 					// lokales Datum - lokale Uhrzeit
 					if (fileName.length() == 0) {
-						fileName = FileUtil.enforceExtension(
-								DateTimeUtil.getDateSortableName(), _audioType);
+						fileName = FileUtil.enforceExtension(DateTimeUtil.getDateSortableName(), _audioType);
 					} else {
-						fileName = FileUtil.enforceExtension(fileName,
-								_audioType);
+						fileName = FileUtil.enforceExtension(fileName, _audioType);
 					}
 				}
 			} else {
-				fileName = FileUtil.enforceExtension(
-						DateTimeUtil.getDateSortableName(), _audioType);
+				fileName = FileUtil.enforceExtension(DateTimeUtil.getDateSortableName(), _audioType);
 			}
 			_stop.setEnabled(true);
 			_record.setIcon(createImageIcon("images/stop.gif", ""));
-			recThread = new RecordThread(_formatPCM, servername,
-					Integer.parseInt(_config.getString("port")), fileName);
+			recThread = new RecordThread(_formatPCM, servername, Integer.parseInt(_config.getString("port")), fileName);
 			recThread.start();
 		}
 	}
@@ -1325,8 +1217,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#undo()
 	 */
 	public void undo() {
-		undoThread = new UndoThread(servername, Integer.parseInt(_config
-				.getString("port")));
+		undoThread = new UndoThread(servername, Integer.parseInt(_config.getString("port")));
 		undoThread.start();
 		refresh();
 	}
@@ -1377,8 +1268,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			}
 			// check if slider was moved and resume at position
 			if (wavPositionSlider.getModel() instanceof CustomSliderRangeModel) {
-				CustomSliderRangeModel csrm = (CustomSliderRangeModel) wavPositionSlider
-						.getModel();
+				CustomSliderRangeModel csrm = (CustomSliderRangeModel) wavPositionSlider.getModel();
 				if (csrm.getSliderPosition() > 0) {
 					resume(csrm.getSliderPosition());
 					return;
@@ -1397,8 +1287,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			} else {
 				audioFormat = _formatPCM;
 			}
-			playThread = new PlayThread(audioFormat, servername,
-					Integer.parseInt(_config.getString("port")), recording,
+			playThread = new PlayThread(audioFormat, servername, Integer.parseInt(_config.getString("port")), recording,
 					this, 0);
 			prepareSlider();
 			playThread.start();
@@ -1415,19 +1304,17 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			_table.changeSelection(_table.getSelectedRow() + 1, 0, false, false);
 			_table.requestFocus();
 		}
-		if (fastModeCheck.isSelected()
-				&& !Boolean
-						.parseBoolean(_config.getString("fastModeSetsAnger"))) {
+		if (fastModeCheck.isSelected() && !Boolean.parseBoolean(_config.getString("fastModeSetsAnger"))) {
 			transField.requestFocus();
 			if (transField.getText().length() == 0) {
-				Recording recording = _recordings
-						.getRecordingAtRow(selectedRow);
+				Recording recording = _recordings.getRecordingAtRow(selectedRow);
 				recording = _recordings.getRecordingAtRow(selectedRow);
 				transField.setText(recording.words);
 				transField.setSelectionStart(0);
 				transField.setSelectionEnd(recording.words.length());
 			}
 		}
+
 	}
 
 	/*
@@ -1448,8 +1335,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			// int resumebytes = lastBytesPlayed > Constants.PREROLL ?
 			// lastBytesPlayed - Constants.PREROLL
 			// : lastBytesPlayed;
-			playThread = new PlayThread(audioFormat, servername,
-					Integer.parseInt(_config.getString("port")), recording,
+			playThread = new PlayThread(audioFormat, servername, Integer.parseInt(_config.getString("port")), recording,
 					this, lastBytesPlayed);
 			prepareSlider();
 			playThread.start();
@@ -1467,8 +1353,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		for (int i = cl.length; --i >= 0;) {
 			wavPositionSlider.removeChangeListener(cl[i]);
 		}
-		CustomSliderRangeModel sliderModel = new CustomSliderRangeModel(
-				playThread);
+		CustomSliderRangeModel sliderModel = new CustomSliderRangeModel(playThread);
 		wavPositionSlider.setModel(sliderModel);
 		wavPositionSlider.addChangeListener(sliderModel);
 	}
@@ -1502,15 +1387,11 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		}
 		_delete.setEnabled(true);
 		// stop.setEnabled(false);
-		if (fastModeCheck.isSelected()
-				&& !Boolean
-						.parseBoolean(_config.getString("fastModeSetsAnger"))) {
-			if (Boolean.parseBoolean(_config
-					.getString("transcriptionFieldInline"))) {
+		if (fastModeCheck.isSelected() && !Boolean.parseBoolean(_config.getString("fastModeSetsAnger"))) {
+			if (Boolean.parseBoolean(_config.getString("transcriptionFieldInline"))) {
 				transField.requestFocus();
 				if (transField.getText().length() == 0) {
-					Recording recording = _recordings
-							.getRecordingAtRow(selectedRow);
+					Recording recording = _recordings.getRecordingAtRow(selectedRow);
 					transField.setText(recording.words);
 					transField.setSelectionStart(0);
 					transField.setSelectionEnd(recording.words.length());
@@ -1519,6 +1400,12 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 				label();
 			}
 		}
+		if (_playAll.isSelected()) {
+			_table.changeSelection(_table.getSelectedRow() + 1, 0, false, false);
+			_table.requestFocus();
+			play();
+		}
+
 	}
 
 	/*
@@ -1528,8 +1415,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 */
 	public void judge() {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
-		judgeThread = new JudgeThread(recording, servername,
-				Integer.parseInt(_config.getString("port")), this);
+		judgeThread = new JudgeThread(recording, servername, Integer.parseInt(_config.getString("port")), this);
 		judgeThread.start();
 		_table.requestFocus();
 		lastSelectedRow = _table.getSelectedRow();
@@ -1537,9 +1423,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 
 	public void exec() {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
-		SendMessageThread sendMessageThread = new SendMessageThread("exec;"
-				+ recording.path, servername, Integer.parseInt(_config
-				.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("exec;" + recording.path, servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
@@ -1555,22 +1440,20 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	public void judgeAll() {
-		SendMessageThread sendMessageThread = new SendMessageThread("judgeAll",
-				servername, Integer.parseInt(_config.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("judgeAll", servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
 	public void recognizeAll() {
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"recognizeAll", servername, Integer.parseInt(_config
-						.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("recognizeAll", servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
 	public void changeAudioFormat(String format) {
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"audioFormat;" + format, servername, Integer.parseInt(_config
-						.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("audioFormat;" + format, servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 		_audioType = format;
 	}
@@ -1581,16 +1464,14 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#judgeAll()
 	 */
 	public void deleteAllPredictions() {
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"removeAllPredictions", servername, Integer.parseInt(_config
-						.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("removeAllPredictions", servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
 	public void changeClassifierType(String type) {
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"classifierType;" + type, servername, Integer.parseInt(_config
-						.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("classifierType;" + type, servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
@@ -1599,8 +1480,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	}
 
 	public void changeSampleRate(String rate) {
-		_formatPCM = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-				Integer.parseInt(rate), 16, 1, 2, Integer.parseInt(rate), false);
+		_formatPCM = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, Integer.parseInt(rate), 16, 1, 2,
+				Integer.parseInt(rate), false);
 		try {
 			_samplerate = Integer.parseInt(rate);
 		} catch (Exception e) {
@@ -1614,15 +1495,13 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#judgeAll()
 	 */
 	public void train() {
-		SendMessageThread sendMessageThread = new SendMessageThread("train "
-				+ extractFeaturesCheck.isSelected(), servername,
-				Integer.parseInt(_config.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("train " + extractFeaturesCheck.isSelected(),
+				servername, Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
 	public void synthesize() {
-		if (JOptionPane.showConfirmDialog(this,
-				_config.getString("synthesize.question"), "sure",
+		if (JOptionPane.showConfirmDialog(this, _config.getString("synthesize.question"), "sure",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 			String recs = "";
 			int[] rowsI = _table.getSelectedRows();
@@ -1633,45 +1512,40 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			String ttsSexFemale = String.valueOf(_ttsSexFemale.isSelected());
 			String ttsLanguage = (String) _ttsLanguages.getValue();
 			SendMessageThread sendMessageThread = new SendMessageThread(
-					"synthesize;" + ttsSexFemale + ";" + ttsLanguage + ";"
-							+ recs, servername, Integer.parseInt(_config
-							.getString("port")), this);
+					"synthesize;" + ttsSexFemale + ";" + ttsLanguage + ";" + recs, servername,
+					Integer.parseInt(_config.getString("port")), this);
 			sendMessageThread.start();
 		}
 	}
 
 	public void synthesizeAll() {
-		if (JOptionPane.showConfirmDialog(this,
-				_config.getString("synthesizeAll.question"), "sure",
+		if (JOptionPane.showConfirmDialog(this, _config.getString("synthesizeAll.question"), "sure",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 			String ttsSexFemale = String.valueOf(_ttsSexFemale.isSelected());
 			String ttsLanguage = (String) _ttsLanguages.getValue();
 			SendMessageThread sendMessageThread = new SendMessageThread(
-					"synthesizeAll;" + ttsSexFemale + ";" + ttsLanguage,
-					servername, Integer.parseInt(_config.getString("port")),
-					this);
+					"synthesizeAll;" + ttsSexFemale + ";" + ttsLanguage, servername,
+					Integer.parseInt(_config.getString("port")), this);
 			sendMessageThread.start();
 		}
 	}
 
 	public void wer() {
-		GetAnswerThread thread = new GetAnswerThread("wer", servername,
-				Integer.parseInt(_config.getString("port")), this);
+		GetAnswerThread thread = new GetAnswerThread("wer", servername, Integer.parseInt(_config.getString("port")),
+				this);
 		thread.start();
 	}
 
 	public void normalize() {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"normalize;" + recording.path, servername,
+		SendMessageThread sendMessageThread = new SendMessageThread("normalize;" + recording.path, servername,
 				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
 	public void normalizeAll() {
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"normalizeAll", servername, Integer.parseInt(_config
-						.getString("port")), this);
+		SendMessageThread sendMessageThread = new SendMessageThread("normalizeAll", servername,
+				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 	}
 
@@ -1681,8 +1555,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#resetRatings()
 	 */
 	public void resetRatings() {
-		ResetThread resetThread = new ResetThread(false, servername,
-				Integer.parseInt(_config.getString("port")), this);
+		ResetThread resetThread = new ResetThread(false, servername, Integer.parseInt(_config.getString("port")), this);
 		resetThread.start();
 	}
 
@@ -1691,9 +1564,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		if (_evalFiles.isSelected()) {
 			mode = "files";
 		}
-		EvaluateThread evaluateThread = new EvaluateThread(servername,
-				Integer.parseInt(_config.getString("port")), this, mode,
-				_config.getString("charEnc"));
+		EvaluateThread evaluateThread = new EvaluateThread(servername, Integer.parseInt(_config.getString("port")),
+				this, mode, _config.getString("charEnc"));
 		evaluateThread.start();
 	}
 
@@ -1720,8 +1592,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
 		recording.addAngerLab(Double.parseDouble(emo));
 		int recIndex = selectedRow;
-		SetFileEmotionThread sfe = new SetFileEmotionThread(servername,
-				Integer.parseInt(_config.getString("port")), recording, emo);
+		SetFileEmotionThread sfe = new SetFileEmotionThread(servername, Integer.parseInt(_config.getString("port")),
+				recording, emo);
 		sfe.start();
 		// updateThread = new UpdateFileListThread(servername,
 		// Integer.parseInt(_config.getString("port")), this);
@@ -1752,8 +1624,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
 		recording.removeLastLabel();
 		int recIndex = selectedRow;
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"removeLastLabel;" + recording.path, servername,
+		SendMessageThread sendMessageThread = new SendMessageThread("removeLastLabel;" + recording.path, servername,
 				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 		_recordings.fireTableDataChanged();
@@ -1768,12 +1639,10 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#removeLastLabel()
 	 */
 	public void removeUntagged() {
-		if (JOptionPane.showConfirmDialog(this,
-				_config.getString("removeUntagged.question"), "sure",
+		if (JOptionPane.showConfirmDialog(this, _config.getString("removeUntagged.question"), "sure",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			SendMessageThread sendMessageThread = new SendMessageThread(
-					"removeUntagged;", servername, Integer.parseInt(_config
-							.getString("port")), this);
+			SendMessageThread sendMessageThread = new SendMessageThread("removeUntagged;", servername,
+					Integer.parseInt(_config.getString("port")), this);
 			sendMessageThread.start();
 		}
 	}
@@ -1787,8 +1656,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
 		recording.removePrediction();
 		int recIndex = selectedRow;
-		SendMessageThread sendMessageThread = new SendMessageThread(
-				"removePred;" + recording.path, servername,
+		SendMessageThread sendMessageThread = new SendMessageThread("removePred;" + recording.path, servername,
 				Integer.parseInt(_config.getString("port")), this);
 		sendMessageThread.start();
 		_recordings.fireTableDataChanged();
@@ -1852,8 +1720,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			transField.setText("");
 		} else {
 			// Prompt the user for a fileName.
-			transcript = JOptionPane.showInputDialog("transcription:",
-					recording.words);
+			transcript = JOptionPane.showInputDialog("transcription:", recording.words);
 		}
 		if (transcript == null) {
 			return;
@@ -1861,10 +1728,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		transcript = transcript.replaceAll("\n", "");
 		recording.setWords(transcript);
 		sendTranscriptToServer(recording, recIndex);
-		if (fastModeCheck.isSelected()
-				&& recIndex < _recordings.rowNum - 1
-				&& !Boolean
-						.parseBoolean(_config.getString("fastModeSetsAnger"))) {
+		if (fastModeCheck.isSelected() && recIndex < _recordings.rowNum - 1
+				&& !Boolean.parseBoolean(_config.getString("fastModeSetsAnger"))) {
 			_table.changeSelection(recIndex + 1, 0, false, false);
 			_table.scrollRectToVisible(_table.getCellRect(recIndex, 0, true));
 			_table.requestFocus();
@@ -1874,8 +1739,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 
 	private void sendTranscriptToServer(Recording recording, int recIndex) {
 		SendTranscriptionThread sfl = new SendTranscriptionThread(servername,
-				Integer.parseInt(_config.getString("port")), recording,
-				_config.getString("charEnc"));
+				Integer.parseInt(_config.getString("port")), recording, _config.getString("charEnc"));
 		sfl.start();
 		_delete.setEnabled(false);
 		_play.setEnabled(false);
@@ -1892,8 +1756,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 
 	public void recognize() {
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
-		RecognitionThread recThread = new RecognitionThread(servername,
-				Integer.parseInt(_config.getString("port")), this, recording);
+		RecognitionThread recThread = new RecognitionThread(servername, Integer.parseInt(_config.getString("port")),
+				this, recording);
 		recThread.start();
 	}
 
@@ -1903,8 +1767,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	 * @see emo.recorder.gui.IRecorder#deleteFile()
 	 */
 	public void deleteFile() {
-		if (JOptionPane.showConfirmDialog(this,
-				_config.getString("delete.question"), "sure",
+		if (JOptionPane.showConfirmDialog(this, _config.getString("delete.question"), "sure",
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 
 			int[] rowsI = _table.getSelectedRows();
@@ -1913,9 +1776,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 				Recording recording = _recordings.getRecordingAtRow(rowsI[i]);
 				recs += recording.path + ";";
 			}
-			SendMessageThread sendMessageThread = new SendMessageThread(
-					"delete;" + recs, servername, Integer.parseInt(_config
-							.getString("port")), this);
+			SendMessageThread sendMessageThread = new SendMessageThread("delete;" + recs, servername,
+					Integer.parseInt(_config.getString("port")), this);
 			sendMessageThread.start();
 		}
 	}
