@@ -53,7 +53,7 @@ import emo.recorder.ClassificationResult.ClassResult;
  * @version 1.0
  * @author Felix Burkhardt
  */
-public class Recorder extends JApplet implements ActionListener, IRecorder {
+public class LabelTool extends JApplet implements ActionListener, IRecorder {
 
 	private static final long serialVersionUID = 1L;
 	private RecordThread recThread;
@@ -78,7 +78,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	private JButton _record, _play, _stop, _refresh, _exec, _open, _resume, _judge, _train, judgeAll, _delete,
 			statistics, _transcribe, evaluate, recognize, recognizeAll, removeUntagged, delAllPreds, toggleTranscript,
 			copyRecognition, _synthesize, _synthesizeAll, _normalize, _normalizeAll, _wer, _export, _import, setNA,
-			removeLastLabel, removePred, _rename, _shuffleButton;
+			removeLastLabel, removePred, _rename, _shuffleButton, _quitSpeechalyzer; 
 	private JCheckBox fastModeCheck, fastPlayModeCheck, extractFeaturesCheck, numberToWordCheck, _openDirectory,
 			_openModel, _evalFiles, _checkSpelling, _ttsSexFemale, _playAll;
 	private JLabel fastModeLabel, fastPlayModeLabel, extractFeaturesLabel, numberToWordLabel, _titleLabel;
@@ -89,7 +89,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	private String _fileDir = "";
 	private KeyValues _config;
 
-	public Recorder(KeyValues config) {
+	public LabelTool(KeyValues config) {
 		_config = config;
 		init();
 		start();
@@ -452,6 +452,9 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		pane.add(_afSpinner);
 		_shuffleButton = initButton("shuffle");
 		pane.add(_shuffleButton);
+
+		_quitSpeechalyzer = initButton("quit");
+		pane.add(_quitSpeechalyzer);
 
 		pane.setBackground(new Color(150, 150, 150));
 		pane.setBorder(BorderFactory.createMatteBorder(1, 1, 2, 2, Color.black));
@@ -974,6 +977,8 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 			train();
 		} else if (e.getActionCommand().equals("shuffle")) {
 			shuffle();
+		} else if (e.getActionCommand().equals("quitSpeechalyzer")) {
+			quitSpeechalyzer();
 		} else if (e.getActionCommand().equals("synthesize")) {
 			_table.requestFocus();
 			synthesize();
@@ -1074,6 +1079,10 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 	private void shuffle() {
 		_recordings.shuffleData();
 		repaintView();
+	}
+	
+	private void  quitSpeechalyzer() {
+		interfaceServer.sendMessage("quit;");	
 	}
 
 	public void open() {
@@ -1832,7 +1841,7 @@ public class Recorder extends JApplet implements ActionListener, IRecorder {
 		} else {
 			config = new KeyValues("labeltool.config");
 		}
-		Recorder recorder = new Recorder(config);
+		LabelTool recorder = new LabelTool(config);
 		frame.setContentPane(recorder.getContentPane());
 		frame.pack();
 		frame.setVisible(true);

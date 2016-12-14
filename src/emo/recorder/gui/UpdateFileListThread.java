@@ -67,7 +67,7 @@ public class UpdateFileListThread extends Thread {
 	/**
 	 * list of recordings.
 	 */
-	Recorder rec;
+	LabelTool rec;
 	/**
 	 * num of port where server listens.
 	 */
@@ -88,7 +88,7 @@ public class UpdateFileListThread extends Thread {
 	 * @param recordings
 	 *            list of recordings.
 	 */
-	public UpdateFileListThread(String servername, int portNum, Recorder rec,
+	public UpdateFileListThread(String servername, int portNum, LabelTool rec,
 			boolean updateAFM, String charEnc, boolean sorting,
 			boolean sortORderAscending) {
 		this.servername = servername;

@@ -4,10 +4,10 @@ import java.util.Properties;
 
 import emo.recorder.Util;
 
-public class RecorderProperties {
+public class LabelToolProperties {
     protected static Properties props;
 
-    public RecorderProperties() {
+    public LabelToolProperties() {
         props = new Properties();
         props.putAll(Util.getValuesFromFile("recorderProperties.txt"));
     }

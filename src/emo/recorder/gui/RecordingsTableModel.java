@@ -64,7 +64,7 @@ KeyValues _config;
 	/**
 	 * constructor: inits the Vector.
 	 */
-	public RecordingsTableModel(Recorder r, boolean useSympalog,
+	public RecordingsTableModel(LabelTool r, boolean useSympalog,
 			boolean hideLabel, boolean hideName, boolean alaw, KeyValues config) {
 		_config = config;
 		this.recorder = r;
