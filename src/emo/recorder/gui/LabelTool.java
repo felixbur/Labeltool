@@ -78,7 +78,7 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 	private JButton _record, _play, _stop, _refresh, _exec, _open, _resume, _judge, _train, judgeAll, _delete,
 			statistics, _transcribe, evaluate, recognize, recognizeAll, removeUntagged, delAllPreds, toggleTranscript,
 			copyRecognition, _synthesize, _synthesizeAll, _normalize, _normalizeAll, _wer, _export, _import, setNA,
-			removeLastLabel, removePred, _rename, _shuffleButton, _quitSpeechalyzer; 
+			removeLastLabel, removePred, _rename, _shuffleButton, _quitSpeechalyzer;
 	private JCheckBox fastModeCheck, fastPlayModeCheck, extractFeaturesCheck, numberToWordCheck, _openDirectory,
 			_openModel, _evalFiles, _checkSpelling, _ttsSexFemale, _playAll;
 	private JLabel fastModeLabel, fastPlayModeLabel, extractFeaturesLabel, numberToWordLabel, _titleLabel;
@@ -977,7 +977,7 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 			train();
 		} else if (e.getActionCommand().equals("shuffle")) {
 			shuffle();
-		} else if (e.getActionCommand().equals("quitSpeechalyzer")) {
+		} else if (e.getActionCommand().equals("quit")) {
 			quitSpeechalyzer();
 		} else if (e.getActionCommand().equals("synthesize")) {
 			_table.requestFocus();
@@ -1080,9 +1080,10 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 		_recordings.shuffleData();
 		repaintView();
 	}
-	
-	private void  quitSpeechalyzer() {
-		interfaceServer.sendMessage("quit;");	
+
+	private void quitSpeechalyzer() {
+		interfaceServer.sendMessage("quit;");
+		System.exit(0);
 	}
 
 	public void open() {
