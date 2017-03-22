@@ -85,7 +85,7 @@ public interface IRecorder {
 	 */
 	public abstract void resetRatings();
 
-	public abstract void setEmotion(String emo);
+	public abstract void setLabel(String category, String emo);
 
 	public abstract void removeLastLabel();
 

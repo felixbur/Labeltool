@@ -123,7 +123,7 @@ public IRecorder _recorder;
 		this.lab = lab;
 	}
 
-	public void addAngerLab(double d) {
+	public void addLabel(double d) {
 		double newD[];
 		System.err.println("adding label: " + d);
 		if (lab != null && lab.length > 0) {

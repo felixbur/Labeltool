@@ -2,6 +2,7 @@ package emo.recorder;
 
 /**
  * Changelog
+ * 2.3  Added multiple label categories
  * 0.93 fixed bug: slider now moveable even while playing.
  * 
  * 
@@ -9,7 +10,7 @@ package emo.recorder;
  *
  */
 public class Constants {
-    public final static double version = 2.21;
+    public final static double version = 2.3;
     public final static String title = "Labeltool";
     public final static String CMD_ADD="add";
     public final static String CMD_IGNORE="ignore";

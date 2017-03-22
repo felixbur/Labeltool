@@ -1,19 +1,46 @@
 package emo.recorder.gui;
 
-import javax.sound.sampled.AudioFormat;
-import javax.swing.*;
-import javax.swing.table.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.event.*;
+import javax.sound.sampled.AudioFormat;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultBoundedRangeModel;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerListModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import com.felix.util.AudioUtil;
 import com.felix.util.DateTimeUtil;
@@ -22,12 +49,10 @@ import com.felix.util.KeyValues;
 import com.felix.util.NumberToWord;
 import com.felix.util.StringUtil;
 import com.felix.util.SwingUtil;
-import com.felix.util.Util;
 
-import emo.recorder.Analyser;
 import emo.recorder.ClassificationResult;
+import emo.recorder.ClassificationResult.ClassResult;
 import emo.recorder.Constants;
-import emo.recorder.Dialog;
 import emo.recorder.EvaluateThread;
 import emo.recorder.GetAnswerThread;
 import emo.recorder.IRecorder;
@@ -40,10 +65,9 @@ import emo.recorder.Recording;
 import emo.recorder.RecordingTable;
 import emo.recorder.ResetThread;
 import emo.recorder.SendMessageThread;
-import emo.recorder.SetFileEmotionThread;
 import emo.recorder.SendTranscriptionThread;
+import emo.recorder.SetFileEmotionThread;
 import emo.recorder.UndoThread;
-import emo.recorder.ClassificationResult.ClassResult;
 
 /**
  * The main class for the webrecorder-client. Usable as an applet or
@@ -840,11 +864,23 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 
 	public Container makeJudgeButtonPane() {
 		JPanel pane = new JPanel();
-		String[] buttonNames = StringUtil.stringToArray(_config.getString("buttons"));
-		for (int i = 0; i < buttonNames.length; i++) {
-			JButton act = initButton(buttonNames[i]);
-			pane.add(act);
+		String[] catNames = StringUtil.stringToArray(_config.getString("categoryNames"));
+		JPanel catsPane = new JPanel();
+		catsPane.setLayout(new BoxLayout(catsPane, BoxLayout.Y_AXIS));
+		for (int i = 0; i < catNames.length; i++) {
+			String catName = catNames[i];
+			JPanel catPane = new JPanel();
+			JLabel lab = new JLabel(_config.getString(catName + "_label"));
+			catPane.add(lab);			
+			String[] buttonNames = StringUtil.stringToArray(_config.getString(catName + "_buttons"));
+			for (int j = 0; j < buttonNames.length; j++) {
+				String buttonName = catName + "_" + buttonNames[j];
+				JButton act = initButton(buttonName);
+				catPane.add(act);
+			}
+			catsPane.add(catPane);
 		}
+		pane.add(catsPane);
 		removeLastLabel = initButton("removeLastLabel");
 		removePred = initButton("removePred");
 		removeUntagged = initButton("removeUntagged");
@@ -923,12 +959,20 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 	 *            actionEvent fired by the button.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String[] buttonNames = StringUtil.stringToArray(_config.getString("buttons"));
-		for (int i = 0; i < buttonNames.length; i++) {
-			if (e.getActionCommand().equals(buttonNames[i])) {
-				setEmotion(_config.getString(buttonNames[i] + ".value"));
+
+		
+		String[] catNames = StringUtil.stringToArray(_config.getString("categoryNames"));
+		for (int i = 0; i < catNames.length; i++) {
+			String catName = catNames[i];
+			String[] buttonNames = StringUtil.stringToArray(_config.getString(catName + "_buttons"));
+			for (int j = 0; j < buttonNames.length; j++) {
+				String buttonName = catName + "_" + buttonNames[j];
+				if (e.getActionCommand().equals(buttonName)) {
+					setLabel(catName, _config.getString(buttonName + ".value"));
+				}
 			}
 		}
+		
 
 		if (e.getActionCommand().equals("record")) {
 			record();
@@ -1005,8 +1049,6 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 			evaluate();
 		} else if (e.getActionCommand().equals("delete")) {
 			deleteFile();
-		} else if (e.getActionCommand().equals("na")) {
-			setEmotion("0");
 		} else if (e.getActionCommand().equals("removeLastLabel")) {
 			removeLastLabel();
 		} else if (e.getActionCommand().equals("removeUntagged")) {
@@ -1584,9 +1626,9 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 	 * 
 	 * @see emo.recorder.gui.IRecorder#setEmotion(java.lang.String)
 	 */
-	public void setEmotion(String emo) {
+	public void setLabel(String category, String label) {
 		if (Boolean.parseBoolean(_config.getString("hideLabel"))) {
-			setMessage("setting Label: " + emo);
+			setMessage("setting Label: " + label);
 		}
 		if (playThread != null) {
 			System.out.println("Stoppe Wiedergabe");
@@ -1600,10 +1642,10 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 			_stop.setEnabled(false);
 		}
 		Recording recording = _recordings.getRecordingAtRow(selectedRow);
-		recording.addAngerLab(Double.parseDouble(emo));
+		recording.addLabel(Double.parseDouble(label));
 		int recIndex = selectedRow;
 		SetFileEmotionThread sfe = new SetFileEmotionThread(servername, Integer.parseInt(_config.getString("port")),
-				recording, emo);
+				recording, category, label);
 		sfe.start();
 		// updateThread = new UpdateFileListThread(servername,
 		// Integer.parseInt(_config.getString("port")), this);
