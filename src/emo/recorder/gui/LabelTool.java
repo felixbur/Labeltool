@@ -892,6 +892,7 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 			pane.add(statistics);
 		}
 		fastModeCheck = new JCheckBox();
+		fastModeCheck.setSelected(_config.getBool("fastTranscritpionModeChecked"));
 		fastModeCheck.setToolTipText(_config.getString("fastTranscritpionMode.tooltip"));
 		fastModeLabel = new JLabel(_config.getString("fastTranscritpionMode.label"));
 		fastModeLabel.setToolTipText(_config.getString("fastTranscritpionMode.tooltip"));
@@ -941,7 +942,7 @@ public class LabelTool extends JApplet implements ActionListener, IRecorder {
 					_delete.setEnabled(true);
 					wavPositionSlider.setModel(new DefaultBoundedRangeModel());
 					if (Boolean.parseBoolean(_config.getString("transcriptionFieldInline"))) {
-						if (transField.isVisible()) {
+						if (transField != null && transField.isVisible()) {
 							transField.setText(_recordings.getRecordingAtRow(selectedRow).words);
 						}
 					}
